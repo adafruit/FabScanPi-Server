@@ -1,5 +1,9 @@
+from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
 import json
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import requests
 import socket
 import logging
@@ -7,7 +11,7 @@ import logging
 try:
     import ssl
 except ImportError:
-    print "error: no ssl support"
+    print("error: no ssl support")
 
 _logger = logging.getLogger(__name__)
 

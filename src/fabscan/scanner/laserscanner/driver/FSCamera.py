@@ -1,3 +1,8 @@
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import range
+from builtins import object
 __author__ = "Mario Lukas"
 __copyright__ = "Copyright 2017"
 __license__ = "GPL v2"
@@ -13,7 +18,7 @@ import time
 import sys, re, threading, collections
 import traceback
 import PIL
-from cStringIO import StringIO
+from io import StringIO
 
 from fabscan.lib.util.FSInject import inject, singleton
 from fabscan.FSConfig import ConfigInterface
@@ -28,7 +33,7 @@ except:
 @inject(
     config=ConfigInterface
 )
-class FSCamera():
+class FSCamera(object):
 
     def __init__(self, config):
 
@@ -205,7 +210,7 @@ class ProcessCamOutput(object):
             try:
                 proc.terminated = True
                 proc.join()
-            except StandardError as e:
+            except Exception as e:
                 pass
             if self.pool.empty:
                 break
@@ -330,7 +335,7 @@ class PiCam(threading.Thread):
             self.idle = False
             self.camera.start_recording(self.output, format='mjpeg')
             self._logger.debug("Cam Stream with Resolution " + str(self.resolution) + " started")
-        except StandardError as e:
+        except Exception as e:
             self._logger.error("Not able to initialize Raspberry Pi Camera.")
             self._logger.error(e)
 
@@ -346,7 +351,7 @@ class PiCam(threading.Thread):
             self.idle = True
             self._logger.debug("Cam Stream with Resolution " + str(self.resolution) + " stopped")
 
-        except StandardError as e:
+        except Exception as e:
             self._logger.error("Not able to stop camera.")
             self._logger.error(e)
 
@@ -362,7 +367,7 @@ class PiCam(threading.Thread):
 # see https://stackoverflow.com/questions/9131992/how-can-i-catch-corrupt-jpegs-when-loading-an-image-with-imread-in-opencv/45055195
 ##
 # FIXME: Causes too many open files....
-class CaptureLibOpenCVStderr:
+class CaptureLibOpenCVStderr(object):
 
     def __init__(self, what):
         self.what = what
@@ -480,7 +485,7 @@ class USBCam(threading.Thread):
             self.idle = False
 
             self._logger.debug("Cam Stream with Resolution " + str(self.resolution) + " started")
-        except StandardError as e:
+        except Exception as e:
             self._logger.error("Not able to initialize USB Camera.")
             self._logger.error(e)
 
@@ -494,7 +499,7 @@ class USBCam(threading.Thread):
             self.idle = True
             self._logger.debug("Cam Stream with Resolution " + str(self.resolution) + " stopped")
 
-        except StandardError as e:
+        except Exception as e:
             self._logger.error("Not able to stop camera.")
             self._logger.error(e)
 
@@ -504,7 +509,7 @@ class USBCam(threading.Thread):
     def flush_stream(self):
         self.camera_buffer.flush()
 
-class DummyCam:
+class DummyCam(object):
 
     def __init__(self):
         self.image_count = 1

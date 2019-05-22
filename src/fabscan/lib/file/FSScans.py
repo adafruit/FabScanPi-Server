@@ -1,3 +1,5 @@
+from builtins import str
+from builtins import object
 __author__ = "Mario Lukas"
 __copyright__ = "Copyright 2017"
 __license__ = "GPL v2"
@@ -18,7 +20,7 @@ from fabscan.lib.util.FSInject import inject
 @inject(
     config=ConfigInterface
 )
-class FSScans():
+class FSScans(object):
 
     def __init__(self, config):
         self.config = config

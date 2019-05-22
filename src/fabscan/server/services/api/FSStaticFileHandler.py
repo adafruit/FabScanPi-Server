@@ -1,4 +1,7 @@
-import urlparse, os
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+import urllib.parse, os
 import datetime
 import time
 import email

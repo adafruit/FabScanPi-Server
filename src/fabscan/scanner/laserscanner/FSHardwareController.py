@@ -1,3 +1,4 @@
+from builtins import str
 __author__ = "Mario Lukas"
 __copyright__ = "Copyright 2017"
 __license__ = "GPL v2"
@@ -95,7 +96,7 @@ class FSHardwareControllerSingleton(FSHardwareControllerInterface):
     def get_devices_as_json(self):
         devices = copy.deepcopy(self.hardware_test_functions)
         for fnct in self.hardware_test_functions:
-            devices[fnct]['FUNCTIONS'] = self.hardware_test_functions[fnct]['FUNCTIONS'].keys()
+            devices[fnct]['FUNCTIONS'] = list(self.hardware_test_functions[fnct]['FUNCTIONS'].keys())
         return devices
 
 

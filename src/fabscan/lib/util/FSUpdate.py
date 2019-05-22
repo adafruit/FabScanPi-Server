@@ -1,6 +1,9 @@
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
 import os
 import re
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import socket
 
 REMOTE_SERVER = "fabscan.org"
@@ -29,7 +32,7 @@ def get_latest_version_tag():
             if "+" in __version__:
                 stage = "testing"
 
-            response = urllib2.urlopen("http://archive.fabscan.org/dists/" + str(stage) + "/main/binary-armhf/Packages", timeout=0.4)
+            response = urllib.request.urlopen("http://archive.fabscan.org/dists/" + str(stage) + "/main/binary-armhf/Packages", timeout=0.4)
             latest_version = __version__
             line = 'START'
             while line != '':
@@ -48,7 +51,7 @@ def get_latest_version_tag():
                                 pass
                             break
             return latest_version
-        except (Exception, urllib2.URLError) as e:
+        except (Exception, urllib.error.URLError) as e:
             _logger.error(e)
             return __version__
     else:

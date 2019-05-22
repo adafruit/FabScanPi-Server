@@ -1,3 +1,6 @@
+from __future__ import absolute_import
+from builtins import str
+from builtins import object
 __author__ = "Mario Lukas"
 __copyright__ = "Copyright 2017"
 __license__ = "GPL v2"
@@ -10,7 +13,7 @@ import sys
 import os
 
 
-from FSWebServer import FSWebServer
+from .FSWebServer import FSWebServer
 from fabscan.FSVersion import __version__
 from fabscan.lib.util.FSInject import injector
 from fabscan.lib.util.FSUtil import FSSystem, FSSystemExit
@@ -53,13 +56,13 @@ class FSScanServer(object):
         try:
             self.restart = False
             FSSystem.run_command("/etc/init.d/fabscanpi-server restart", blocking=True)
-        except StandardError, e:
+        except Exception as e:
             self._logger.error(e)
 
     def update_server(self):
          try:
              do_upgrade()
-         except StandardError, e:
+         except Exception as e:
             self._logger.error(e)
 
     def run(self):

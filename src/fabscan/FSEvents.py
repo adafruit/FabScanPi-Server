@@ -1,3 +1,6 @@
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object
 __author__ = "Mario Lukas"
 __copyright__ = "Copyright 2017"
 __license__ = "GPL v2"
@@ -5,11 +8,11 @@ __maintainer__ = "Mario Lukas"
 __email__ = "info@mariolukas.de"
 
 import multiprocessing
-from Queue import Empty
+from queue import Empty
 from fabscan.lib.util.FSInject import singleton
 import logging
 
-class FSEvent():
+class FSEvent(object):
     pass
 
 class FSEvents(object):

@@ -1,3 +1,4 @@
+from builtins import object
 import os
 import base64
 import logging
@@ -10,7 +11,7 @@ from fabscan.lib.util.FSInject import inject
 @inject(
     config=ConfigInterface
 )
-class FSMeshlabFilter():
+class FSMeshlabFilter(object):
     def __init__(self, config):
         self.config = config
         self._logger = logging.getLogger(__name__)

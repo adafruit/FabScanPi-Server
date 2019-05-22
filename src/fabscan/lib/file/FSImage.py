@@ -1,3 +1,5 @@
+from builtins import str
+from builtins import object
 __author__ = "Mario Lukas"
 __copyright__ = "Copyright 2017"
 

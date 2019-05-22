@@ -1,3 +1,4 @@
+from builtins import str
 import tornado.websocket
 import json
 import sys

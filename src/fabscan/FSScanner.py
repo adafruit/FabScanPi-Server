@@ -1,3 +1,5 @@
+from builtins import str
+from builtins import object
 __author__ = "Mario Lukas"
 __copyright__ = "Copyright 2017"
 __license__ = "GPL v2"
@@ -201,7 +203,7 @@ class FSScanner(threading.Thread):
             self.scanProcessor.tell({FSEvents.COMMAND: FSScanProcessorCommand.NOTIFY_HARDWARE_STATE})
             #self.scanProcessor.tell({FSEvents.COMMAND: FSScanProcessorCommand.NOTIFY_IF_NOT_CALIBRATED})
 
-        except StandardError, e:
+        except Exception as e:
             self._logger.error(e)
 
     def set_state(self, state):

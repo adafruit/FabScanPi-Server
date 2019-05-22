@@ -1,10 +1,13 @@
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
 import tornado.ioloop
 import tornado.web
 import tornado.gen
 import time
 import logging
 import cv2
-import StringIO
+import io
 from PIL import Image
 from fabscan.server.services.api.FSBaseHandler import BaseHandler
 from fabscan.scanner.interfaces.FSScanProcessor import FSScanProcessorCommand
@@ -28,14 +31,14 @@ class FSStreamHandler(tornado.web.RequestHandler):
                 future_image = self.scanprocessor.ask({FSEvents.COMMAND: FSScanProcessorCommand.GET_LASER_STREAM},
                                                       block=False)
                 img = future_image.get()
-        except StandardError as e:
+        except Exception as e:
             pass
             # self._logger.error(e)
 
         ret, jpeg = cv2.imencode('.jpg', img)
         return jpeg.tostring()
 
-    @tornado.web.asynchronous
+    # @tornado.web.asynchronous
     @tornado.gen.coroutine
     def get(self):
         """
