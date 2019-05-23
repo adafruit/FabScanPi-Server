@@ -15,9 +15,9 @@ from fabscan.FSConfig import ConfigInterface
 
 INTERSTEP_DELAY = 0.01
 
-@inject(
-    config=ConfigInterface
-)
+# @inject(
+#     config=ConfigInterface
+# )
 class Turntable(object):
     def __init__(self, serial_object, config):
         self.config=config

@@ -62,6 +62,7 @@ class FSWebServer(threading.Thread):
         ])
 
     def run(self):
+        pass
         webserver = self.routes()
         webserver.listen(8080)
         tornado.ioloop.IOLoop.current().start()

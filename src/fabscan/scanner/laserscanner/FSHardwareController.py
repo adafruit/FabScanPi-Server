@@ -42,15 +42,15 @@ class FSHardwareControllerSingleton(FSHardwareControllerInterface):
         self.camera = None
         self._image_processor = imageprocessor
         self.camera = FSCamera()
-        self.serial_connection = FSSerialCom()
+        self.serial_connection = None     # FSSerialCom()
 
-        self.turntable = Turntable(serial_object=self.serial_connection)
+        self.turntable = Turntable(serial_object=self.serial_connection, config=config)
         self.laser = Laser(self.serial_connection)
         self.led = Led(self.serial_connection)
 
         self._logger.debug("Reset FabScanPi HAT...")
         self.laser.off(laser=0)
-        #self.laser.off(laser=1)
+        self.laser.off(laser=1)
         self.led.off()
         self.turntable.stop_turning()
         self._logger.debug("Hardware controller initialized...")
