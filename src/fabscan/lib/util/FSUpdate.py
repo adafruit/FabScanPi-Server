@@ -72,11 +72,12 @@ def is_online(hostname):
   return False
 
 def upgrade_is_available(current_version):
+    return False, current_version
+    # latest_version = get_latest_version_tag()
 
-    latest_version = get_latest_version_tag()
-
-    return semver.compare(latest_version, current_version) == 1, latest_version
+    # return semver.compare(latest_version, current_version) == 1, latest_version
 
 
 def do_upgrade():
-    os.system('nohup bash -c "sudo apt-get update -y && sudo apt-get dist-upgrade -y" >> /var/log/fabscanpi/upgrade.log')
+    pass
+    # os.system('nohup bash -c "sudo apt-get update -y && sudo apt-get dist-upgrade -y" >> /var/log/fabscanpi/upgrade.log')
