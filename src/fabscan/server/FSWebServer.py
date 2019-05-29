@@ -8,6 +8,8 @@ import threading
 
 import tornado.ioloop
 import tornado.web
+import tornado.httpserver
+import asyncio
 import os
 import logging
 from fabscan.server.services.websocket.FSWebSocketHandler import FSWebSocketHandler
@@ -23,6 +25,8 @@ from fabscan.scanner.interfaces.FSScanProcessor import FSScanProcessorInterface
 from fabscan.scanner.interfaces.FSHardwareController import FSHardwareControllerInterface
 from fabscan.FSConfig import ConfigSingleton, ConfigInterface
 from fabscan.lib.util.FSInject import inject
+
+SERVER_PORT = 8080
 
 @inject(
     config=ConfigInterface,
@@ -62,10 +66,12 @@ class FSWebServer(threading.Thread):
         ])
 
     def run(self):
-        pass
-        webserver = self.routes()
-        webserver.listen(8080)
-        tornado.ioloop.IOLoop.current().start()
+        asyncio.set_event_loop(asyncio.new_event_loop())
+        app = self.routes()
+        webserver = tornado.httpserver.HTTPServer(app)
+        webserver.listen(SERVER_PORT)
+        tornado.ioloop.IOLoop.instance().start()
+        self._logger.debug("Server listening on port %d", SERVER_PORT)
 
     def kill(self):
         tornado.ioloop.IOLoop.instance().stop()
