@@ -7,6 +7,7 @@ __email__ = "info@mariolukas.de"
 
 import os
 import json
+import logging
 from fabscan.lib.util.FSInject import inject, singleton
 
 class SettingsInterface(object):
@@ -17,7 +18,7 @@ class SettingsInterface(object):
 class Settings(SettingsInterface):
 
     def __init__(self, settings, first=True):
-
+        self._logger = logging.getLogger(__name__)
 
         if first:
             self.file = settings
@@ -70,9 +71,11 @@ class Settings(SettingsInterface):
     def todict(self, obj, classkey=None):
         if isinstance(obj, dict):
             data = {}
-            for (k, v) in list(obj.items()):
+            for (k, v) in obj.items():
                 data[k] = self.todict(v, classkey)
             return data
+        elif isinstance(obj, str):
+            return obj
         elif hasattr(obj, "_ast"):
             return self.todict(obj._ast())
         elif hasattr(obj, "__iter__"):
