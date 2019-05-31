@@ -32,12 +32,12 @@ class FSHardwareControllerSingleton(FSHardwareControllerInterface):
     together
     """
     def __init__(self, config, settings, imageprocessor):
-
+        self._logger = logging.getLogger(__name__)
+        self._logger.debug("Constructing FSHardwareControllerSingleton")
 
         self.config = config
         self.settings = settings
 
-        self._logger = logging.getLogger(__name__)
         self._settings_mode_is_off = True
         self.camera = None
         self._image_processor = imageprocessor
@@ -72,13 +72,13 @@ class FSHardwareControllerSingleton(FSHardwareControllerInterface):
                 },
                 "LABEL": "First Laser"
             },
-            "RIGHT_LASER": {
-               "FUNCTIONS": {
-                   "ON": lambda: self.laser.on(1),
-                   "OFF": lambda: self.laser.off(1)
-               },
-               "LABEL": "Second Laser"
-            },
+            # "RIGHT_LASER": {
+            #    "FUNCTIONS": {
+            #        "ON": lambda: self.laser.on(1),
+            #        "OFF": lambda: self.laser.off(1)
+            #    },
+            #    "LABEL": "Second Laser"
+            # },
             "LED_RING": {
                 "FUNCTIONS": {
                     "ON": lambda: self.led.on(255, 255, 255),
@@ -116,6 +116,7 @@ class FSHardwareControllerSingleton(FSHardwareControllerInterface):
         self._settings_mode_is_off = False
         self.camera.device.flush_stream()
         self.laser.on(laser=0)
+        self._logger.debug("finished settings_mode_on")
         #self.turntable.start_turning()
 
     def settings_mode_off(self):
