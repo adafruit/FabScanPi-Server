@@ -18,7 +18,7 @@ class FSLogHandler(BaseHandler):
         self.scanlib = FSScans()
 
 
-    @tornado.web.asynchronous
+    # @tornado.web.asynchronous
     def get(self):
         try:
             log_file = self._logger.handlers[0].baseFilename

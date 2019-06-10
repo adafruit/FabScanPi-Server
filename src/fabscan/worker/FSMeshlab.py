@@ -1,3 +1,8 @@
+from __future__ import print_function
+from __future__ import division
+from builtins import str
+from builtins import filter
+from past.utils import old_div
 import threading
 import logging
 import os
@@ -31,7 +36,7 @@ class FSMeshlabTask(threading.Thread):
             with open(pointcloud_file) as myFile:
                 for num, line in enumerate(myFile, 1):
                     if lookup in line:
-                        number_of_pints = int(filter(str.isdigit, line))
+                        number_of_pints = int(list(filter(str.isdigit, line)))
                         return number_of_pints
 
         def prepare_down_sampling(self, file, pointcloud_size):
@@ -42,10 +47,10 @@ class FSMeshlabTask(threading.Thread):
                 params = xmldoc.getElementsByTagName('Param')
                 for param in params:
                     if param.attributes['name'].value == "SampleNum":
-                        param.setAttribute('value', str(int(pointcloud_size/3)))
+                        param.setAttribute('value', str(int(old_div(pointcloud_size,3))))
 
-            except xml.parsers.expat.ExpatError, ex:
-                print ex
+            except xml.parsers.expat.ExpatError as ex:
+                print(ex)
 
             with open(file, "wb") as fh:
                 xmldoc.writexml(fh)

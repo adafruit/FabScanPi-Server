@@ -1,3 +1,9 @@
+from __future__ import division
+from builtins import zip
+from builtins import str
+from builtins import range
+from builtins import object
+from past.utils import old_div
 import numpy as np
 from scipy import optimize
 import time
@@ -47,11 +53,11 @@ class FSCalibration(FSCalibrationInterface):
         self.image_points = []
         self.object_points = []
         self.calibration_brightness = [20, 20, 20]
-        self.quater_turn = int(self.config.turntable.steps / 4)
+        self.quater_turn = int(old_div(self.config.turntable.steps, 4))
 
         self.motor_move_degree = 3.6 # 1.8,  2.7 , 3.6, 5.0
-        self.motorsteps_per_calibration_step = self.motor_move_degree / (360.0 / self.config.turntable.steps)
-        self.total_positions = int(((self.quater_turn / self.motorsteps_per_calibration_step) * 4) + 2)
+        self.motorsteps_per_calibration_step = old_div(self.motor_move_degree, (360.0 / self.config.turntable.steps))
+        self.total_positions = int(((old_div(self.quater_turn, self.motorsteps_per_calibration_step)) * 4) + 2)
         self.current_position = 0
         self._starttime = 0
 
@@ -141,7 +147,7 @@ class FSCalibration(FSCalibrationInterface):
 
             self.reset_calibration_values()
             return
-        except StandardError as e:
+        except Exception as e:
             self._logger.error(e)
 
     def stop(self):
@@ -179,7 +185,7 @@ class FSCalibration(FSCalibrationInterface):
             if not self._stop:
                 self._hardwarecontroller.turntable.step_blocking(self.quater_turn, speed=900)
                 _calibrate()
-        except StandardError as e:
+        except Exception as e:
             self._logger.debug("Calibration Error")
             self._logger.error(e)
 
@@ -192,10 +198,10 @@ class FSCalibration(FSCalibrationInterface):
 
         if ret:
             # Compute calibration error
-            for i in xrange(len(self.object_points)):
+            for i in range(len(self.object_points)):
                 imgpoints2, _ = cv2.projectPoints(
                     self.object_points[i], rvecs[i], tvecs[i], cmat, dvec)
-                error += cv2.norm(self.image_points[i], imgpoints2, cv2.NORM_L2) / len(imgpoints2)
+                error += old_div(cv2.norm(self.image_points[i], imgpoints2, cv2.NORM_L2), len(imgpoints2))
             error /= len(self.object_points)
 
         self.config.calibration.camera_matrix = copy.deepcopy(np.round(cmat, 3))
@@ -241,7 +247,7 @@ class FSCalibration(FSCalibrationInterface):
         try:
             pose = self._imageprocessor.detect_pose(image, flags)
             plane = self._imageprocessor.detect_pattern_plane(pose)
-        except StandardError as e:
+        except Exception as e:
             plane = None
             self._logger.error(e)
 
@@ -255,13 +261,13 @@ class FSCalibration(FSCalibrationInterface):
                 exc_info = sys.exc_info()
                 #Laser Calibration
                 #if (position > self.laser_calib_start and position < self.laser_calib_end):
-                alpha = np.rad2deg(math.acos(normal[2] / np.linalg.norm((normal[0], normal[2])))) * math.copysign(1,normal[0])
+                alpha = np.rad2deg(math.acos(old_div(normal[2], np.linalg.norm((normal[0], normal[2]))))) * math.copysign(1,normal[0])
                 self._logger.debug("Current Angle is:" + str(alpha))
                 if abs(alpha) < 35:
                     #self.settings.camera.contrast = 40
                     #self.settings.camera.brightness = 70
                     self._hardwarecontroller.led.off()
-                    for i in xrange(self.config.laser.numbers):
+                    for i in range(self.config.laser.numbers):
                         image = self._capture_laser(i)
                         image = self._imageprocessor.pattern_mask(image, corners)
                         self.image = image
@@ -286,7 +292,7 @@ class FSCalibration(FSCalibrationInterface):
                 t = self._imageprocessor.compute_camera_point_cloud(
                     origin, distance, normal)
 
-            except StandardError, e:
+            except Exception as e:
                 self._logger.exception(e)
                 self._logger.error("Laser Capture Error: "+str(e))
                 message = {
@@ -323,7 +329,7 @@ class FSCalibration(FSCalibrationInterface):
         response = None
         # Laser triangulation
         # Save point clouds
-        for i in xrange(self.config.laser.numbers):
+        for i in range(self.config.laser.numbers):
             self.save_point_cloud('CALIBRATION_' + str(i) + '.ply', self._point_cloud[i])
 
         self.distance = [None, None]
@@ -331,7 +337,7 @@ class FSCalibration(FSCalibrationInterface):
         self.std = [None, None]
 
         # Compute planes
-        for i in xrange(self.config.laser.numbers):
+        for i in range(self.config.laser.numbers):
             #if self._is_calibrating:
                 plane = self.compute_plane(i, self._point_cloud[i])
                 self.distance[i], self.normal[i], self.std[i] = plane
@@ -341,7 +347,7 @@ class FSCalibration(FSCalibrationInterface):
         self.x = np.array(self.x)
         self.y = np.array(self.y)
         self.z = np.array(self.z)
-        points = zip(self.x, self.y, self.z)
+        points = list(zip(self.x, self.y, self.z))
 
         if len(points) > 4:
             # Fitting a plane
@@ -449,9 +455,9 @@ class FSCalibration(FSCalibrationInterface):
         # creating two inplane vectors
         # assuming that normal not parallel x!
         s = np.cross(np.array([1, 0, 0]), np.array(normal))
-        s = s / np.linalg.norm(s)
+        s = old_div(s, np.linalg.norm(s))
         r = np.cross(np.array(normal), s)
-        r = r / np.linalg.norm(r)  # should be normalized already, but anyhow
+        r = old_div(r, np.linalg.norm(r))  # should be normalized already, but anyhow
 
         # Define rotation
         R = np.array([s, r, normal]).T
@@ -475,7 +481,7 @@ class FSCalibration(FSCalibrationInterface):
         best_inlier_num = 0
         best_inliers = None
         data_idx = np.arange(data.shape[0])
-        for _ in xrange(max_trials):
+        for _ in range(max_trials):
             sample = data[np.random.randint(0, data.shape[0], 3)]
             if model_class.is_degenerate(sample):
                 continue
@@ -516,7 +522,7 @@ class FSCalibration(FSCalibrationInterface):
         stream.write(frame)
 
     def get_time_stamp(self):
-        return int(datetime.now().strftime("%s%f"))/1000
+        return old_div(int(datetime.now().strftime("%s%f")),1000)
 
 import numpy.linalg
 
@@ -545,6 +551,6 @@ class PlaneDetection(object):
 
     def _compute_m(self, X):
         n = X.shape[0]
-        Xm = X.sum(axis=0) / n
+        Xm = old_div(X.sum(axis=0), n)
         M = np.array(X - Xm).T
         return M, Xm

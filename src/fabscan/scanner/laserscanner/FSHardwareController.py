@@ -1,3 +1,4 @@
+from builtins import str
 __author__ = "Mario Lukas"
 __copyright__ = "Copyright 2017"
 __license__ = "GPL v2"
@@ -31,25 +32,25 @@ class FSHardwareControllerSingleton(FSHardwareControllerInterface):
     together
     """
     def __init__(self, config, settings, imageprocessor):
-
+        self._logger = logging.getLogger(__name__)
+        self._logger.debug("Constructing FSHardwareControllerSingleton")
 
         self.config = config
         self.settings = settings
 
-        self._logger = logging.getLogger(__name__)
         self._settings_mode_is_off = True
         self.camera = None
         self._image_processor = imageprocessor
         self.camera = FSCamera()
-        self.serial_connection = FSSerialCom()
+        self.serial_connection = None     # FSSerialCom()
 
-        self.turntable = Turntable(serial_object=self.serial_connection)
+        self.turntable = Turntable(serial_object=self.serial_connection, config=config)
         self.laser = Laser(self.serial_connection)
         self.led = Led(self.serial_connection)
 
         self._logger.debug("Reset FabScanPi HAT...")
         self.laser.off(laser=0)
-        #self.laser.off(laser=1)
+        self.laser.off(laser=1)
         self.led.off()
         self.turntable.stop_turning()
         self._logger.debug("Hardware controller initialized...")
@@ -71,13 +72,13 @@ class FSHardwareControllerSingleton(FSHardwareControllerInterface):
                 },
                 "LABEL": "First Laser"
             },
-            #"RIGHT_LASER": {
+            # "RIGHT_LASER": {
             #    "FUNCTIONS": {
             #        "ON": lambda: self.laser.on(1),
             #        "OFF": lambda: self.laser.off(1)
             #    },
             #    "LABEL": "Second Laser"
-            #},
+            # },
             "LED_RING": {
                 "FUNCTIONS": {
                     "ON": lambda: self.led.on(255, 255, 255),
@@ -93,9 +94,11 @@ class FSHardwareControllerSingleton(FSHardwareControllerInterface):
 
 
     def get_devices_as_json(self):
-        devices = copy.deepcopy(self.hardware_test_functions)
+        devices = {} #copy.deepcopy(self.hardware_test_functions)
         for fnct in self.hardware_test_functions:
-            devices[fnct]['FUNCTIONS'] = self.hardware_test_functions[fnct]['FUNCTIONS'].keys()
+            devices[fnct] = {}
+            devices[fnct]['FUNCTIONS'] = list(self.hardware_test_functions[fnct]['FUNCTIONS'].keys())
+        self._logger.debug("devices: " + str(devices))
         return devices
 
 
@@ -113,6 +116,7 @@ class FSHardwareControllerSingleton(FSHardwareControllerInterface):
         self._settings_mode_is_off = False
         self.camera.device.flush_stream()
         self.laser.on(laser=0)
+        self._logger.debug("finished settings_mode_on")
         #self.turntable.start_turning()
 
     def settings_mode_off(self):
@@ -160,10 +164,10 @@ class FSHardwareControllerSingleton(FSHardwareControllerInterface):
 
 
     def arduino_is_connected(self):
-        return self.serial_connection.is_connected()
+        return True #self.serial_connection.is_connected()
 
     def get_firmware_version(self):
-        return self.serial_connection.get_firmware_version()
+        return "undefined"  #self.serial_connection.get_firmware_version()
 
     def camera_is_connected(self):
        return self.camera.is_connected()

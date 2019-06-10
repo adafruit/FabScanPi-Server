@@ -15,5 +15,6 @@ class FSDeviceHandler(BaseHandler):
         self.hardwarecontroller = kwargs.get('hardwarecontroller')
 
     def get(self):
+        self._logger.debug('FSDeviceHandler:get')
         devices = self.hardwarecontroller.get_devices_as_json()
         self.write(json.dumps(devices))

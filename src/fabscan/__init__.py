@@ -1,3 +1,5 @@
+from __future__ import print_function
+from builtins import str
 __author__ = "Mario Lukas"
 __copyright__ = "Copyright 2017"
 __license__ = "GPL v2"
@@ -13,26 +15,26 @@ import sys
 
 
 class Main(Daemon):
-        def __init__(self, pidfile, configfile, basedir, host, port, debug, allowRoot, logConf):
-            Daemon.__init__(self, pidfile)
+    def __init__(self, pidfile, configfile, basedir, host, port, debug, allowRoot, logConf):
+        Daemon.__init__(self, pidfile)
 
-            self._logger =  logging.getLogger(__name__)
-            self._logger.setLevel(logging.DEBUG)
-            self._configfile = configfile
-            self._basedir = basedir
-            self._host = host
-            self._port = port
-            self._debug = debug
-            self._allowRoot = allowRoot
-            self._logConf = logConf
+        self._logger =  logging.getLogger(__name__)
+        self._logger.setLevel(logging.DEBUG)
+        self._configfile = configfile
+        self._basedir = basedir
+        self._host = host
+        self._port = port
+        self._debug = debug
+        self._allowRoot = allowRoot
+        self._logConf = logConf
 
 
-	def run(self):
+    def run(self):
         #server = FSScanServer(config_file)
         #fabscan = FSScanServer(self._configfile, self._basedir, self._host, self._port, self._debug, self._allowRoot)
 
-		fabscan = FSScanServer(self._configfile)
-		fabscan.run()
+        fabscan = FSScanServer(self._configfile)
+        fabscan.run()
 
 def main():
 
@@ -113,13 +115,13 @@ def main():
         logger.setLevel(level)
 
     if args.version:
-        print "FabScan Pi version %s" % __version__
+        print("FabScan Pi version %s" % __version__)
         sys.exit(0)
 
     try:
         if args.daemon:
             if sys.platform == "darwin" or sys.platform == "win32":
-                print >> sys.stderr, "Sorry, daemon mode is only supported under Linux right now"
+                print("Sorry, daemon mode is only supported under Linux right now", file=sys.stderr)
                 sys.exit(2)
 
             daemon = Main(args.pidfile, args.config, args.basedir, args.host, args.port, args.debug, args.allowRoot, args.logConf)
@@ -132,7 +134,7 @@ def main():
         else:
             fabscan = FSScanServer(args.config, args.settings)
             fabscan.run()
-    except Exception, e:
+    except Exception as e:
         logger.fatal("Fatal error: %s", e)
         sys.exit(1)
 

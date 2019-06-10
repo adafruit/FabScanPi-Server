@@ -1,3 +1,7 @@
+from __future__ import division
+from builtins import str
+from builtins import zip
+from past.utils import old_div
 __author__ = "Mario Lukas"
 __copyright__ = "Copyright 2017"
 __license__ = "GPL v2"
@@ -155,7 +159,7 @@ class FSScanProcessor(FSScanProcessorInterface):
             image = self.hardwareController.get_picture()
             #image = self.image_processor.get_texture_stream_frame(image)
             return image
-        except StandardError, e:
+        except Exception as e:
             #self._logger.error(e)
             pass
 
@@ -164,7 +168,7 @@ class FSScanProcessor(FSScanProcessorInterface):
             image = self.hardwareController.get_picture()
             image = self.image_processor.get_adjustment_stream_frame(image)
             return image
-        except StandardError, e:
+        except Exception as e:
             pass
 
     def create_calibration_stream(self):
@@ -172,7 +176,7 @@ class FSScanProcessor(FSScanProcessorInterface):
             image = self.hardwareController.get_picture()
             image = self.image_processor.get_calibration_stream_frame(image)
             return image
-        except StandardError, e:
+        except Exception as e:
             # images are dropped this cateched exception.. no error hanlder needed here.
             pass
 
@@ -181,7 +185,7 @@ class FSScanProcessor(FSScanProcessorInterface):
             image = self.hardwareController.get_picture()
 
             return image
-        except StandardError, e:
+        except Exception as e:
             # images are dropped this cateched exception.. no error hanlder needed here.
             pass
 
@@ -191,14 +195,14 @@ class FSScanProcessor(FSScanProcessorInterface):
             self.settings.update(settings)
             #FIXME: Only change Color Settings when values changed.
             self.hardwareController.led.on(self.settings.led.red, self.settings.led.green, self.settings.led.blue)
-        except StandardError, e:
+        except Exception as e:
             # images are dropped this cateched exception.. no error hanlder needed here.
             pass
 
     def update_config(self, config):
         try:
             self.config.update(config)
-        except StandardError, e:
+        except Exception as e:
             pass
 
     def start_calibration(self):
@@ -229,6 +233,7 @@ class FSScanProcessor(FSScanProcessorInterface):
             self.eventmanager.broadcast_client_message(FSEvents.ON_INFO_MESSAGE, message)
 
     def settings_mode_on(self):
+        self._logger.debug("FSScanProcessor:settings_mode_on")
         #message = {
         #    "message": "SETTINGS_MODE_ON",
         #    "level": "info"
@@ -259,7 +264,7 @@ class FSScanProcessor(FSScanProcessorInterface):
         self._laser_positions = int(self.settings.laser_positions)
         self._is_color_scan = bool(self.settings.color)
 
-        self._number_of_pictures = self.config.turntable.steps / int(self.settings.resolution)
+        self._number_of_pictures = old_div(self.config.turntable.steps, int(self.settings.resolution))
         self.current_position = 0
         self._starttime = self.get_time_stamp()
 
@@ -430,8 +435,8 @@ class FSScanProcessor(FSScanProcessorInterface):
         if event['image_type'] == 'depth':
 
             scan_state = 'object_scan'
-            point_cloud = zip(event['point_cloud'][0], event['point_cloud'][1], event['point_cloud'][2],
-                              event['texture'][0], event['texture'][1], event['texture'][2])
+            point_cloud = list(zip(event['point_cloud'][0], event['point_cloud'][1], event['point_cloud'][2],
+                              event['texture'][0], event['texture'][1], event['texture'][2]))
 
             self.append_points(point_cloud)
 
@@ -475,7 +480,7 @@ class FSScanProcessor(FSScanProcessorInterface):
     def scan_complete(self):
 
         end_time = self.get_time_stamp()
-        duration = int(end_time - self._starttime)/1000
+        duration = old_div(int(end_time - self._starttime),1000)
         self._logger.debug("Time Total: %i sec." % (duration,))
 
         self._starttime = 0
@@ -538,4 +543,4 @@ class FSScanProcessor(FSScanProcessorInterface):
         self.point_cloud = None
 
     def get_time_stamp(self):
-        return int(datetime.now().strftime("%s%f"))/1000
+        return old_div(int(datetime.now().strftime("%s%f")),1000)

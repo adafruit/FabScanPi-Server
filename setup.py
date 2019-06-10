@@ -71,7 +71,7 @@ def params():
         "License :: OSI Approved :: GNU Affero General Public License v3",
         "Natural Language :: English",
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.5",
         "Programming Language :: JavaScript",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Internet :: WWW/HTTP :: Dynamic Content",

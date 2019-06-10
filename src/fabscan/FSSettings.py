@@ -1,3 +1,4 @@
+from builtins import object
 __author__ = "Mario Lukas"
 __copyright__ = "Copyright 2017"
 __license__ = "GPL v2"
@@ -6,6 +7,7 @@ __email__ = "info@mariolukas.de"
 
 import os
 import json
+import logging
 from fabscan.lib.util.FSInject import inject, singleton
 
 class SettingsInterface(object):
@@ -16,7 +18,7 @@ class SettingsInterface(object):
 class Settings(SettingsInterface):
 
     def __init__(self, settings, first=True):
-
+        self._logger = logging.getLogger(__name__)
 
         if first:
             self.file = settings
@@ -32,7 +34,7 @@ class Settings(SettingsInterface):
                 return key, element
 
 
-        object_dict = dict(_traverse(k, v) for k, v in settings.iteritems())
+        object_dict = dict(_traverse(k, v) for k, v in settings.items())
 
         self.__dict__.update(object_dict)
 
@@ -72,13 +74,15 @@ class Settings(SettingsInterface):
             for (k, v) in obj.items():
                 data[k] = self.todict(v, classkey)
             return data
+        elif isinstance(obj, str):
+            return obj
         elif hasattr(obj, "_ast"):
             return self.todict(obj._ast())
         elif hasattr(obj, "__iter__"):
             return [self.todict(v, classkey) for v in obj]
         elif hasattr(obj, "__dict__"):
             data = dict([(key, self.todict(value, classkey))
-                for key, value in obj.__dict__.iteritems()
+                for key, value in obj.__dict__.items()
                 if not callable(value) and not key.startswith('_')])
             if classkey is not None and hasattr(obj, "__class__"):
                 data[classkey] = obj.__class__.__name__

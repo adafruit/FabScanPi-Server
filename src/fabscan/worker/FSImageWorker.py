@@ -1,10 +1,15 @@
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import range
+from builtins import object
 __author__ = "Mario Lukas"
 __copyright__ = "Copyright 2017"
 __license__ = "GPL v2"
 __maintainer__ = "Mario Lukas"
 __email__ = "info@mariolukas.de"
 
-from Queue import Empty
+from queue import Empty
 import multiprocessing
 import logging
 import time
@@ -23,7 +28,7 @@ from fabscan.scanner.interfaces.FSImageProcessor import ImageProcessorInterface
         settings=SettingsInterface,
         imageprocessor=ImageProcessorInterface
 )
-class FSImageWorkerPool():
+class FSImageWorkerPool(object):
     def __init__(self, task_q, event_q, config, settings, imageprocessor):
         self._task_q = task_q
         self._event_q = event_q
@@ -151,7 +156,7 @@ class FSImageWorkerProcess(multiprocessing.Process):
 
                                 point_cloud, texture = self.image_processor.process_image(angle, image_task.image, color_image)
                                 # FIXME: Only send event if points is non-empty
-                            except StandardError as e:
+                            except Exception as e:
                                 self._logger.debug(e)
                             data['point_cloud'] = point_cloud
                             data['texture'] = texture

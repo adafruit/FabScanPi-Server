@@ -1,3 +1,4 @@
+from builtins import object
 __author__ = "Mario Lukas"
 __copyright__ = "Copyright 2017"
 __license__ = "GPL v2"
@@ -23,7 +24,7 @@ class PointCloudError(Exception):
 @inject(
     config=ConfigInterface
 )
-class FSPointCloud():
+class FSPointCloud(object):
 
     def __init__(self, config, color=True):
         self.points = []

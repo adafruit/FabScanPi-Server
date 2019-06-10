@@ -1,3 +1,5 @@
+from builtins import str
+from builtins import object
 import importlib
 import logging
 
@@ -10,6 +12,6 @@ class FSScannerFactory(object):
         try:
             scanner_type = importlib.import_module('fabscan.scanner.'+str(type))
             scanner_type.create()
-        except Exception, e:
+        except Exception as e:
             logger.exception("Error ")
             pass

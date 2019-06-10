@@ -1,28 +1,26 @@
+from builtins import object
 __author__ = "Mario Lukas"
 __copyright__ = "Copyright 2017"
 __license__ = "GPL v2"
 __maintainer__ = "Mario Lukas"
 __email__ = "info@mariolukas.de"
 
-class Laser:
+from adafruit_crickit import crickit
+
+class Laser(object):
     def __init__(self, serial_object):
-        self.serial_connection = serial_object
+        pass
 
     def on(self, laser=0):
-        if (laser != None) and (self.serial_connection != None):
+        if (laser != None):
             if laser == 0:
-                command = "M21;"
+                crickit.drive_1.fraction = 1.0
             else:
-                command = "M19;"
-
-            self.serial_connection.send_and_receive(command)
-
+                crickit.drive_2.fraction = 1.0
 
     def off(self, laser=0):
-        if (laser != None) and (self.serial_connection != None):
+        if (laser != None):
             if laser == 0:
-                command = "M22;"
+                crickit.drive_1.fraction = 0.0
             else:
-                command = "M20;"
-
-            self.serial_connection.send_and_receive(command)
+                crickit.drive_2.fraction = 0.0

@@ -1,3 +1,4 @@
+from builtins import object
 __author__ = 'mariolukas'
 import os
 import json
@@ -91,7 +92,7 @@ class FSSystem(object):
 
 
 def _json_object_hook(d):
-    return namedtuple('X', d.keys())(*d.values())
+    return namedtuple('X', list(d.keys()))(*list(d.values()))
 
 def json2obj(data):
     return json.loads(data, object_hook=_json_object_hook)

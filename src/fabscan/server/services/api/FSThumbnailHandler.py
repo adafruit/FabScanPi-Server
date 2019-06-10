@@ -1,3 +1,4 @@
+from builtins import str
 import json
 from PIL import Image
 import base64

@@ -791,10 +791,10 @@ Example of a 'common' filter that can be shared by all views
         config = {
           installation: {
             host: host,
-            websocketurl: ws + '://' + host + '/websocket',
+            websocketurl: ws + '://' + host + ':8080/websocket',
             httpurl: http + '://' + host + ':8080/',
             newsurl: http + '://fabscanpi-server.readthedocs.io/en/latest/news/',
-            apiurl: http + '://' + host + '/'
+            apiurl: http + '://' + host + ':8080/'
           }
         };
       }

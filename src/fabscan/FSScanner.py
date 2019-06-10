@@ -1,3 +1,5 @@
+from builtins import str
+from builtins import object
 __author__ = "Mario Lukas"
 __copyright__ = "Copyright 2017"
 __license__ = "GPL v2"
@@ -175,6 +177,7 @@ class FSScanner(threading.Thread):
 
     # new client conneted
     def on_client_connected(self, eventManager, event):
+        self._logger.debug("on_client_connected")
         try:
             try:
                 hardware_info = self.scanProcessor.ask({FSEvents.COMMAND: FSScanProcessorCommand.GET_HARDWARE_INFO})
@@ -182,7 +185,6 @@ class FSScanner(threading.Thread):
                 hardware_info = "undefined"
 
             self._upgrade_available, self._upgrade_version = upgrade_is_available(__version__)
-            self._logger.debug("Upgrade available: "+str(self._upgrade_available)+" "+self._upgrade_version)
 
             message = {
                 "client": event['client'],
@@ -201,7 +203,7 @@ class FSScanner(threading.Thread):
             self.scanProcessor.tell({FSEvents.COMMAND: FSScanProcessorCommand.NOTIFY_HARDWARE_STATE})
             #self.scanProcessor.tell({FSEvents.COMMAND: FSScanProcessorCommand.NOTIFY_IF_NOT_CALIBRATED})
 
-        except StandardError, e:
+        except Exception as e:
             self._logger.error(e)
 
     def set_state(self, state):

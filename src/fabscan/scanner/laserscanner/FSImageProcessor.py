@@ -1,3 +1,9 @@
+from __future__ import division
+from builtins import str
+from builtins import zip
+from builtins import range
+from builtins import object
+from past.utils import old_div
 __author__ = "Mario Lukas"
 __copyright__ = "Copyright 2017"
 __license__ = "GPL v2"
@@ -31,7 +37,7 @@ class LinearLeastSquares2D(object):
             theta = math.atan2(vec[0], vec[1])
         elif data.shape[0] == 2:  # well determined
             theta = math.atan2(data[1, 0] - data[0, 0], data[1, 1] - data[0, 1])
-        theta = (theta + math.pi * 5 / 2) % (2 * math.pi)
+        theta = (theta + old_div(math.pi * 5, 2)) % (2 * math.pi)
         d = x0 * math.sin(theta) + y0 * math.cos(theta)
         return d, theta
 
@@ -114,7 +120,7 @@ class ImageProcessor(ImageProcessorInterface):
         best_inlier_num = 0
         best_inliers = None
         data_idx = np.arange(data.shape[0])
-        for _ in xrange(max_trials):
+        for _ in range(max_trials):
             sample = data[np.random.randint(0, data.shape[0], 2)]
             if model_class.is_degenerate(sample):
                 continue
@@ -138,7 +144,7 @@ class ImageProcessor(ImageProcessorInterface):
             _min = peak - window_value
             _max = peak + window_value + 1
             mask = np.zeros_like(image)
-            for i in xrange(self.image_height):
+            for i in range(self.image_height):
                 mask[i, _min[i]:_max[i]] = 255
                 # Apply mask
         image = cv2.bitwise_and(image, mask)
@@ -204,7 +210,7 @@ class ImageProcessor(ImageProcessorInterface):
         if len(u) > 1:
             data = np.vstack((v.ravel(), u.ravel())).T
             dr, thetar = self.ransac(data, LinearLeastSquares2D(), 2, 2)
-            u = (dr - v * math.sin(thetar)) / math.cos(thetar)
+            u = old_div((dr - v * math.sin(thetar)), math.cos(thetar))
         return u, v
 
     def compute_2d_points(self, image, roi_mask=True, refinement_method='SGF'):
@@ -215,7 +221,7 @@ class ImageProcessor(ImageProcessorInterface):
             # Peak detection: center of mass
             s = image.sum(axis=1)
             v = np.where(s > 0)[0]
-            u = (self._weight_matrix * image).sum(axis=1)[v] / s[v]
+            u = old_div((self._weight_matrix * image).sum(axis=1)[v], s[v])
 
             if refinement_method == 'SGF':
                 # Segmented gaussian filter
@@ -248,7 +254,7 @@ class ImageProcessor(ImageProcessorInterface):
         if bool(self.settings.show_laser_overlay):
             points, ret_img = self.compute_2d_points(image, roi_mask=False)
             u, v = points
-            c = zip(u, v)
+            c = list(zip(u, v))
 
             for t in c:
                 cv2.line(image, (int(t[0]) - 1, int(t[1])), (int(t[0]) + 1, int(t[1])), (255, 0, 0), thickness=1,
@@ -292,7 +298,7 @@ class ImageProcessor(ImageProcessorInterface):
 
     def mask_image(self, image):
             mask = np.zeros(image.shape, np.uint8)
-            mask[0:self.image_height, (self.image_width/2):self.image_width] = image[0:self.image_height, (self.image_width/2):self.image_width]
+            mask[0:self.image_height, (old_div(self.image_width,2)):self.image_width] = image[0:self.image_height, (old_div(self.image_width,2)):self.image_width]
             return mask
 
     def mask_point_cloud(self, point_cloud):
@@ -354,7 +360,7 @@ class ImageProcessor(ImageProcessorInterface):
 
         # Compute projection point
         u, v = points_2d
-        x = np.concatenate(((u - cx) / fx, (v - cy) / fy, np.ones(len(u)))).reshape(3, len(u))
+        x = np.concatenate((old_div((u - cx), fx), old_div((v - cy), fy), np.ones(len(u)))).reshape(3, len(u))
 
 
         ## points_for_undistort = np.array([np.concatenate((u, v)).reshape(2, len(u)).T])
@@ -377,7 +383,7 @@ class ImageProcessor(ImageProcessorInterface):
         ### cam_point_direction * d / dlc = 3D point
 
         #return d / np.dot(n, cam_point_direction) * cam_point_direction
-        return d / np.dot(n, x) * x
+        return old_div(d, np.dot(n, x) * x)
 
     def detect_corners(self, image, flags=None):
         corners = self._detect_chessboard(image, flags)

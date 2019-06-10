@@ -1,4 +1,6 @@
-import urlparse, os
+from future import standard_library
+standard_library.install_aliases()
+import urllib.parse, os
 import json
 import logging
 from fabscan.server.services.api.FSStaticFileHandler import FSStaticFileHandler

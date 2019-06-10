@@ -1,3 +1,5 @@
+from builtins import str
+from builtins import object
 __author__ = "Mario Lukas"
 __copyright__ = "Copyright 2017"
 __license__ = "GPL v2"
@@ -18,7 +20,7 @@ from fabscan.FSConfig import ConfigInterface
 @inject(
     config=ConfigInterface
 )
-class FSSerialCom():
+class FSSerialCom(object):
     def __init__(self, config):
 
         self.config = config
