@@ -245,8 +245,10 @@ class PiCam(threading.Thread):
         self.resolution = (self.config.camera.preview_resolution.width, self.config.camera.preview_resolution.height)
         self.camera = picamera.PiCamera(resolution=self.resolution)
         self.start()
+        self._logger.debug("Constructed and started camera")
 
     def run(self):
+        self._logger.debug("Camera running")
         while True:
             if not self.idle and self.camera.recording:
                 try:
@@ -545,4 +547,3 @@ class DummyCam(object):
 
     def close(self):
         pass
-

@@ -1,14 +1,41 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 __author__ = "Mario Lukas"
 __copyright__ = "Copyright 2017"
 __license__ = "GPL v2"
 __maintainer__ = "Mario Lukas"
 __email__ = "info@mariolukas.de"
 
+import sys                                #for tracing
 import fabscan
+
+ignored_funcs = ['write', '<genexpr>', '<module>'] #, '__call__', '_traverse', '_with_meta']
+
+# for tracing
+def trace_calls(frame, event, arg):
+    if event != 'call':
+        return
+    co = frame.f_code
+    func_name = co.co_name
+    func_line_no = frame.f_lineno
+    func_filename = co.co_filename
+    if func_filename.find('fabscan') == -1:
+        return
+    if func_filename.find('FSInject.py') != -1:
+        return
+    if func_name in ignored_funcs:
+        return
+    caller = frame.f_back
+    caller_line_no = caller.f_lineno
+    caller_filename = caller.f_code.co_filename
+    print('Call to "%s" on line %s of %s from line %s of %s' % \
+        (func_name, func_line_no, func_filename,
+         caller_line_no, caller_filename))
+    return
+
 
 def main():
     fabscan.main()
 
 if __name__ == "__main__":
+    sys.settrace(trace_calls)             #for tracing
     main()

@@ -233,6 +233,7 @@ class FSScanProcessor(FSScanProcessorInterface):
             self.eventmanager.broadcast_client_message(FSEvents.ON_INFO_MESSAGE, message)
 
     def settings_mode_on(self):
+        self._logger.debug("FSScanProcessor:settings_mode_on")
         #message = {
         #    "message": "SETTINGS_MODE_ON",
         #    "level": "info"

@@ -53,6 +53,7 @@ class FSStaticFileHandler(BaseHandler):
                 self.redirect(self.request.path + "/")
                 return
             abspath = os.path.join(abspath, self.default_filename)
+        self._logger.debug('FSStaticFileHandler:get %s', abspath)
         if not os.path.exists(abspath):
             raise HTTPError(404)
         if not os.path.isfile(abspath):
@@ -96,4 +97,3 @@ class FSStaticFileHandler(BaseHandler):
     def set_extra_headers(self, path):
         """For subclass to add extra headers to the response"""
         pass
-
